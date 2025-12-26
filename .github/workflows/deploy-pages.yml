@@ -60,3 +60,11 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+
+      - name: Verify Pages URL
+        run: |
+          PAGES_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "Verifying $PAGES_URL"
+          # Check response status and print first part of the HTML for quick verification
+          curl -I -L "$PAGES_URL" || true
+          curl -s "$PAGES_URL" | sed -n '1,40p' || true
