@@ -27,21 +27,10 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: |
-          echo "Using VITE_BASE=$VITE_BASE"
-          npm run build -- --base $VITE_BASE
+        run: npm run build
         env:
+          # 強制讓 Vite 知道現在是在 GitHub Pages 環境
           VITE_BASE: /${{ github.event.repository.name }}/
-          
-      - name: Show built index and env
-        run: |
-          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
-          echo "GITHUB_REPOSITORY_NAME=${{ github.event.repository.name }}"
-          echo "VITE_BASE=$VITE_BASE"
-          echo "----- dist/index.html (head) -----"
-          sed -n '1,120p' dist/index.html || true
-          echo "----- dist assets list -----"
-          ls -la dist | sed -n '1,80p'
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -60,11 +49,3 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-
-      - name: Verify Pages URL
-        run: |
-          PAGES_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-          echo "Verifying $PAGES_URL"
-          # Check response status and print first part of the HTML for quick verification
-          curl -I -L "$PAGES_URL" || true
-          curl -s "$PAGES_URL" | sed -n '1,40p' || true
